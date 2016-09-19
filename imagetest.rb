@@ -3,21 +3,24 @@ require 'minitest/autorun'
 require 'phashion'
 
 
-
-
 class ImageTest < Minitest::Test
-=begin
-  def test_same_icon
-    assert_equal '08:00', Clock.at(8).to_s
-    assert_equal '09:00', Clock.at(9).to_s
-  end
-=end
 
-  def test_two_similar_images
+  def check_images(img1, img2, true_or_false, description)
+    img1 = Phashion::Image.new(img1)
+    img2 = Phashion::Image.new(img2)
+    print description + ":" + img1.distance_from(img2).to_s
+    assert_equal true_or_false, img1.duplicate?(img2)
+  end
+
+  def test_two_similar_images_slightly_cropped
     img1 = Phashion::Image.new('img/beowulf1.png')
     img2 = Phashion::Image.new('img/beowulf2.png')
-    puts "Two Similar Images: " + img1.distance_from(img2).to_s
+    puts "Two Similar Images (slight crop): " + img1.distance_from(img2).to_s
     assert_equal true, img1.duplicate?(img2)
+  end
+
+  def test_two_similar_icons
+    check_images("img/orange_icon1.png", "img/orange_icon2.png", true, "Two Similar Icons")
   end
 
   def test_two_different_complex_images
@@ -59,8 +62,19 @@ class ImageTest < Minitest::Test
   def test_blue_paper_vs_blue_hand_icon
     img1 = Phashion::Image.new('img/icon_hand.png')
     img2 = Phashion::Image.new('img/icon_paper.png')
-    puts "White Arrow vs White Paper Icon: " + img1.distance_from(img2).to_s
+    puts "Blue Paper VS Blue Hand: " + img1.distance_from(img2).to_s
     assert_equal false, img1.duplicate?(img2)
+  end
+
+  def two_black_and_white_small_line_icons
+    img1 = Phashion::Image.new('img/bw_small_line_house_icon.png')
+    img2 = Phashion::Image.new('img/bw_small_pencil_line_icon.png')
+    puts "Black Line Based Icon vs White Line Based Icon: " + img1.distance_from(img2).to_s
+    assert_equal false, img1.duplicate?(img2)
+  end
+
+  def test_same_image_jpeg_vs_png
+    check_images("img/beowulf_big_jpg.jpg", "img/beowulf_big_png.png", true, "Same Image But JPEG VS PNG")
   end
 
 end
